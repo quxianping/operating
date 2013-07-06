@@ -37,4 +37,5 @@ operating
 =======================================
 (1) dove 日志每日切分
 (2) mosquitto 日志没有切分，需要使用cronolog，每日100MB
-(3)
+(3) nest 日志每日切分
+(4) nginx 日志无切分，需要使用cronolog
