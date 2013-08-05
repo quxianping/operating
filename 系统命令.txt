@@ -1,0 +1,14 @@
+系统负载	vmstat 1
+系统负载	top -H
+网卡		sar -n DEV 1 5
+系统状态	/proc/stat
+进程状态	/proc/$pid/stat
+网卡状态	/proc/net/dev
+用户资源限制	ulimit -a/-u/-n（mosquitto相关）
+系统消息大小	/proc/sys/kernel/msg{max|mni|mnb}（ndo2db相关）
+进程		ps aux
+awk		awk '{print $1}'
+sed		sed 's/'$eth'://'
+cpu负载		mpstat 1 1
+io负载		iostat -dk
+系统内存	free | grep 'buffers/cache'
