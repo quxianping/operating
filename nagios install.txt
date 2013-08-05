@@ -1,0 +1,78 @@
+下载nagios源码
+nagios-3.5.0.tar.gz
+解压缩后进入文件夹
+./configure --with-nagios-user=work --with-nagios-group=work -with-mysql=/home/work/mysql/bin/mysql --prefix=/home/work/nagios/
+./configure --with-nagios-user=work --with-nagios-group=work -with-command-user=work -with-command-group=work -with-mysql=/home/work/mysql/bin/mysql --prefix=/home/work/nagios/ --enable-embedded-perl
+make all
+make install
+make install-init
+make install-commandmode
+make install-config
+*****************************
+由于我们将要使用cacti做ui展示，故这里省略
+make install-webconf
+make install-exfoliation
+make install-classicui
+*****************************
+
+下载nagios-plugins源码
+nagios-plugins-1.4.16.tar.gz
+解压缩后进入文件夹
+./configure --prefix=/home/work/nagios --with-mysql=/home/work/mysql
+make 
+make install
+
+nagios conf 一般使用默认方式即可
+process_performance_data=1
+service_perfdata_command=process-service-perfdata  #默认此句被注释掉了
+
+./nagios -v ../etc/nagios.cfg 检查配置文件
+./nagios -d ../etc/nagios.cfg 启动nagios
+
+下载ndo源码
+ndoutils-1.5.2.tar.gz
+解压缩后进入文件夹
+./configure --prefix=/home/work/nagios/ --with-mysql=/home/work/mysql --enable-mysql --with-ndo2db-user=work --with-ndo2db-group=work LDFLAGS=-L/home/work/mysql/lib
+make
+make install
+
+配置config
+需要配置ndo2db和ndomod的配置文件，nagios配置文件加入broker配置
+机器目前使用tcp模式，把ssl开启，才正常
+错误log参见/var/log/messages
+
+./ndo2db -c ../etc/ndo2db.cfg
+
+********************************************************************
+期间主机需要安装perl-DBD-mysql（开发机已经通过root直接安装，不需要源码安装）
+http://search.cpan.org/~capttofu/DBD-mysql-3.0008/
+perl Makefile.PL --mysql_config=/home/work/mysql/bin/mysql_config
+********************************************************************
+
+npc从国外网站下载，版本号2.0.4
+直接cp到cacti的plugins目录
+进入cacti的管理页面，然后plugin management，install和enable npc
+
+安装npc之后，需要添加缺失字段
+ALTER TABLE npc_eventhandlers ADD long_output TEXT NOT NULL DEFAULT '' AFTER output;
+ALTER TABLE npc_hostchecks ADD long_output TEXT NOT NULL DEFAULT '' AFTER output;
+ALTER TABLE npc_hoststatus ADD long_output TEXT NOT NULL DEFAULT '' AFTER output;
+ALTER TABLE npc_notifications ADD long_output TEXT NOT NULL DEFAULT '' AFTER output;
+ALTER TABLE npc_servicechecks ADD long_output TEXT NOT NULL DEFAULT '' AFTER output;
+ALTER TABLE npc_servicestatus ADD long_output TEXT NOT NULL DEFAULT '' AFTER output;
+ALTER TABLE npc_statehistory ADD long_output TEXT NOT NULL DEFAULT '' AFTER output;
+ALTER TABLE npc_systemcommands ADD long_output TEXT NOT NULL DEFAULT '' AFTER output;
+
+最后，真正启动即可
+
+修改plugins npc中的代码，根据需要，不然不能展示图
+By the looks of it, it has hard coded '/graph_image.php' in quite a few files. Changing that should solve your problem:
+
+js/src/monitoring/services/serviceDetail.js
+js/src/monitoring/services/services.js
+js/src/monitoring/hosts/hosts.js
+js/src/monitoring/hosts/hostDetail.js
+js/src/npc.js
+js/npc-all-min.js
+
+npc由于在新的php下运行，会有很多报错，可以直接关闭error_reporting
