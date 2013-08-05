@@ -1,0 +1,31 @@
+#!/bin/bash
+
+PROGNAME="check_redis"
+RELEASE=1.0.0
+
+print_usage() {
+	echo ""
+		echo "$PROGNAME $RELEASE - Redis status check script for Nagios"
+		echo ""
+		echo "Usage: check_redis"
+		echo ""
+		echo "  -p  the port : 6379 "
+		echo "  -v  check the version"
+		echo "  -h  Show this page"
+		echo ""
+		echo "Usage: $PROGNAME"
+		echo "Usage: $PROGNAME --help"
+		echo ""
+		exit 0
+}                                                                                                          
+
+print_help() {
+	print_usage
+		echo ""
+		echo "This plugin will check Redis status "
+		echo ""
+		exit 0
+}
+
+/home/work/redis/bin/redis-cli get "monitor"
+exit 0
